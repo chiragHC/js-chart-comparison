@@ -7,7 +7,7 @@
   <%= csrf_meta_tags %>
 </head>
 <body>
-  <div><%= link_to "rgraph", :action => :rgraph %> (canvas -> no IE8)</div>
-  <div><%= link_to "fusioncharts", :action => :fusioncharts %> (SVG -> no image download without extra work)</div>
+  <div><%= link_to "rgraph", :action => :rgraph %> (canvas -> doesn't work on IE8)</div>
+  <div><%= link_to "fusioncharts", :action => :fusioncharts %> (SVG -> using canvg to convert SVG to canvas (but it doesn't work on IE))</div>
 </body>
 </html>

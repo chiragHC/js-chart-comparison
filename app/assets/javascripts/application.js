@@ -17,3 +17,5 @@
 //= require ./fusioncharts/FusionCharts.js.coffee
 //= require ./fusioncharts/fusioncharts.js
 //= require_tree ./fusioncharts
+//= require ./canvg/rgbcolor.js
+//= require ./canvg/canvg.js
