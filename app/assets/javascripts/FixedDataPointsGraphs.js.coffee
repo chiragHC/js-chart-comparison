@@ -1,10 +1,10 @@
 #= require jquery.color
 
-@FixedDataPointsGraphs = class FixedDataPointsGraphs extends FusionChartsManager
+@FixedDataPointsGraphs = class FixedDataPointsGraphs extends BaseChartsManager
   _setupGraphs: ->
-    @_setupFirstGraph()
-    @_setupSecondGraph()
-    @_setupThirdGraph()
+    FusionCharts.ready @_setupFirstGraph()
+    #second graph have open questions yet
+    FusionCharts.ready @_setupThirdGraph()
 
   _setupFirstGraph: ->
     generateCategory = -> for i in [2007..2015] then label: i
@@ -12,7 +12,7 @@
 
     (new FusionCharts
       type: 'msline'
-      renderAt: 'line1'
+      renderAt: 'fusionchart-line'
       width: 800
       height: 500
       dataSource:
@@ -31,8 +31,6 @@
           "7.3.8", "7.3.9", "7.3.10", "7.3.11", "7.3.12", "7.3.13", "7.3.14"],
           generateData)
     ).render()
-
-  _setupSecondGraph: ->
 
   _setupThirdGraph: ->
     generateCategory = ->
@@ -53,7 +51,7 @@
 
     (new FusionCharts
       type: 'scatter'
-      renderAt: 'scatter1'
+      renderAt: 'fusionchart-scatter'
       width: 800
       height: 500
       dataSource:
@@ -69,8 +67,6 @@
         dataset: @_generateDataset(["7.5.1.2", "7.5.2.2", "7.5.3.2", "7.5.6.2.1"],
           generateData)
     ).render()
-
-  _getRandomInt: (min, max) -> Math.floor(Math.random() * (max - min + 1)) + min
 
   _getColor: (index) ->
     index = Object.keys(jQuery.Color.names)[index]

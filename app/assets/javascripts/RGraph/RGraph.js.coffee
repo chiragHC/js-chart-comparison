@@ -1,8 +1,4 @@
-@RGraphManager = class RGraphManager
-  constructor: ->
-    @_setupGraphs()
-    @_setupInputs()
-
+@RGraphManager = class RGraphManager extends BaseChartsManager
   _setupGraphs: ->
     (new RGraph.Bar
       id: "bar"
@@ -44,12 +40,6 @@
 
   _rgraphLabels: ->
     ['Henning','Louis','John','Pete','Lucy','Fred']
-
-  _setupInputs: ->
-    $('button').on('click', @_handleDownloadClick)
-    $('canvas').each (index, value) ->
-      id = $(value).attr('id')
-      $('#download').append $("<option value='#{id}'>#{id}</option>")
 
   _handleDownloadClick: ->
     canvas = $('#' + $('#download').val())

@@ -13,6 +13,7 @@
 //= require jquery
 //= require jquery_ujs
 //= require js-routes
+//= require ./BaseChartsManager.js.coffee
 //= require_tree ./RGraph
 //= require ./fusioncharts/FusionCharts.js.coffee
 //= require ./fusioncharts/fusioncharts.js
@@ -20,3 +21,4 @@
 //= require ./canvg/rgbcolor.js
 //= require ./canvg/canvg.js
 //= require ./FixedDataPointsGraphs.js.coffee
+//= require_tree ./amcharts
