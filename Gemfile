@@ -13,6 +13,7 @@ gem 'therubyracer', platforms: :ruby
 
 gem 'jquery-rails'
 gem 'js-routes'
+gem 'jquery-color'
 
 gem 'puma'
 

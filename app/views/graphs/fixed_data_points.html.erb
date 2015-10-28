@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Graph Libraries Comparison</title>
+  <%= stylesheet_link_tag 'application', media: 'all', 'data-turbolinks-track' => true %>
+  <%= csrf_meta_tags %>
+</head>
+<body>
+  <div id="line1" class="graph"></div>
+
+  <canvas style="display:none;"></canvas>
+
+  <div>
+    <label>Graph: <select id="download"></select></label>
+    <button>Send PNG to server and download</button>
+  </div>
+  <div>
+    <img id="result">
+  </div>
+
+  <%= javascript_tag 'new FixedDataPointsGraphs()' -%>
+</body>
+</html>

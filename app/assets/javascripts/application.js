@@ -19,3 +19,4 @@
 //= require_tree ./fusioncharts
 //= require ./canvg/rgbcolor.js
 //= require ./canvg/canvg.js
+//= require ./FixedDataPointsGraphs.js.coffee

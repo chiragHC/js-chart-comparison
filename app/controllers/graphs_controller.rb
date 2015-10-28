@@ -17,4 +17,7 @@ class GraphsController < ApplicationController
   rescue => e
     render status: :error, json: e.message
   end
+
+  def fixed_data_points
+  end
 end

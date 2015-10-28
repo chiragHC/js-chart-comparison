@@ -7,6 +7,7 @@ Rails.application.routes.draw do
 
   get 'rgraph' => 'graphs#rgraph'
   get 'fusioncharts' => 'graphs#fusioncharts'
+  get 'fixed_data_points' => 'graphs#fixed_data_points'
 
   post 'graphs' => 'graphs#upload_and_download', as: :upload_and_download
 
