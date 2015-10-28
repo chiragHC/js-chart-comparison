@@ -2,36 +2,13 @@
 
 @FixedDataPointsGraphs = class FixedDataPointsGraphs extends FusionChartsManager
   _setupGraphs: ->
-    getRandomInt = (min, max) -> Math.floor(Math.random() * (max - min + 1)) + min
+    @_setupFirstGraph()
+    @_setupSecondGraph()
+    @_setupThirdGraph()
 
-    generateLineData = (size) ->
-      data = []
-      for [2007..2015] then data.push value: getRandomInt(0, 400)
-      data
-
-    getRandomColor = ->
-      letters = '0123456789ABCDEF'.split('')
-      color = '#'
-      for i in [0..6] then color += letters[Math.floor(Math.random() * 16)]
-      color
-
-    generateLineCategory = ->
-      data = []
-      for i in [2007..2015] then data.push
-        label: i
-      data
-
-    getColor = (index) ->
-      index = Object.keys(jQuery.Color.names)[index]
-      jQuery.Color.names[index]
-
-    generateLineDataset = (series) ->
-      data = []
-      for serie, index in series then data.push
-        seriesname: serie
-        data: generateLineData()
-        color: getColor(index)
-      data
+  _setupFirstGraph: ->
+    generateCategory = -> for i in [2007..2015] then label: i
+    generateData = => for [2007..2015] then value: @_getRandomInt(0, 400)
 
     (new FusionCharts
       type: 'msline'
@@ -48,8 +25,61 @@
           showYAxisValues: 1
           showValues: 0
         categories:
-          category: generateLineCategory()
-        dataset: generateLineDataset([
+          category: generateCategory()
+        dataset: @_generateDataset([
           "7.3.1", "7.3.2", "7.3.3", "7.3.4", "7.3.5", "7.3.6", "7.3.7",
-          "7.3.8", "7.3.9", "7.3.10", "7.3.11", "7.3.12", "7.3.13", "7.3.14"])
+          "7.3.8", "7.3.9", "7.3.10", "7.3.11", "7.3.12", "7.3.13", "7.3.14"],
+          generateData)
     ).render()
+
+  _setupSecondGraph: ->
+
+  _setupThirdGraph: ->
+    generateCategory = ->
+      getDate = (monthsBack) ->
+        monthNamesShort = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
+          'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
+        date = new Date()
+        date.setMonth(date.getMonth() - monthsBack);
+        monthNamesShort[date.getMonth()] + '<br>' + date.getFullYear()
+      for i in [17..0]
+        label: getDate(i)
+        x: i
+
+    generateData = =>
+      for [0..17]
+        x: @_getRandomInt(0, 17)
+        y: @_getRandomInt(1, 8000000)
+
+    (new FusionCharts
+      type: 'scatter'
+      renderAt: 'scatter1'
+      width: 800
+      height: 500
+      dataSource:
+        chart: {
+          caption: "3. Anticipated Term Expiries"
+          xAxisName: "Time"
+          yAxisName: "Deal value"
+          yNumberPrefix: "$"
+          theme: "fint"
+        }
+        categories:
+          category: generateCategory()
+        dataset: @_generateDataset(["7.5.1.2", "7.5.2.2", "7.5.3.2", "7.5.6.2.1"],
+          generateData)
+    ).render()
+
+  _getRandomInt: (min, max) -> Math.floor(Math.random() * (max - min + 1)) + min
+
+  _getColor: (index) ->
+    index = Object.keys(jQuery.Color.names)[index]
+    jQuery.Color.names[index]
+
+  _generateDataset: (series, dataGenerator) ->
+    data = []
+    for serie, index in series then data.push
+      seriesname: serie
+      data: dataGenerator()
+      color: @_getColor(index)
+    data
