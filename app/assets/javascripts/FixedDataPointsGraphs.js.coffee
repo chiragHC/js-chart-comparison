@@ -1,14 +1,21 @@
 #= require jquery.color
 
 @FixedDataPointsGraphs = class FixedDataPointsGraphs extends BaseChartsManager
-  _setupGraphs: ->
-    FusionCharts.ready @_setupFirstGraph()
-    #second graph have open questions yet
-    FusionCharts.ready @_setupThirdGraph()
+  FIRST_GRAPH_SERIES: ["7.3.1", "7.3.2", "7.3.3", "7.3.4", "7.3.5", "7.3.6", "7.3.7",
+      "7.3.8", "7.3.9", "7.3.10", "7.3.11", "7.3.12", "7.3.13", "7.3.14"]
+  THIRD_GRAPH_SERIES: ["7.5.1.2", "7.5.2.2", "7.5.3.2", "7.5.6.2.1"]
+  GRAPHS_PERIOD: [2007, 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015]
 
-  _setupFirstGraph: ->
-    generateCategory = -> for i in [2007..2015] then label: i
-    generateData = => for [2007..2015] then value: @_getRandomInt(0, 400)
+  _setupGraphs: ->
+    FusionCharts.ready @_setupFirstFusionGraph()
+    #second graph have open questions yet
+    FusionCharts.ready @_setupThirdFusionGraph()
+    @_setupFirstAmGraph()
+    @_setupThirdAmGraph()
+
+  _setupFirstFusionGraph: ->
+    generateCategory = => for i in @GRAPHS_PERIOD then label: i
+    generateData = => for i in @GRAPHS_PERIOD then value: @_getRandomInt(0, 399)
 
     (new FusionCharts
       type: 'msline'
@@ -26,13 +33,66 @@
           showValues: 0
         categories:
           category: generateCategory()
-        dataset: @_generateDataset([
-          "7.3.1", "7.3.2", "7.3.3", "7.3.4", "7.3.5", "7.3.6", "7.3.7",
-          "7.3.8", "7.3.9", "7.3.10", "7.3.11", "7.3.12", "7.3.13", "7.3.14"],
-          generateData)
+        dataset: @_generateDataset(@FIRST_GRAPH_SERIES, generateData)
     ).render()
 
-  _setupThirdGraph: ->
+  _setupFirstAmGraph: ->
+    genereateProvider = (series) =>
+      for year in @GRAPHS_PERIOD
+        obj = {year: year}
+        for serie in series then obj[serie] = @_getRandomInt(0, 399)
+        obj
+
+    generateGraphs = (series) =>
+      for serie, index in series
+        balloonText: "Total transactions with #{serie} set to 'Yes' is [[value]]"
+        bullet: "round"
+        title: serie
+        valueField: serie
+        fillAlphas: 0
+        lineColor: @_getColor(index)
+
+    AmCharts.makeChart("amcharts-line",
+      titles: [
+        {
+          text: "1. Use of Proceeds over Time (2.3)"
+          size: 15
+        },
+        {
+          text: "Aggregated amount (7.1) of each 7.3 subfield"
+          size: 12
+          bold: false
+        }
+      ]
+      type: "serial"
+      theme: "light"
+      legend:
+        useGraphSettings: true
+      dataProvider: genereateProvider(@FIRST_GRAPH_SERIES)
+      valueAxes: [
+        maximum: 400
+        dashLength: 5
+        title: "Number of transactions"
+      ]
+      startEffect: "easeOutSine"
+      startDuration: 0.1
+      graphs: generateGraphs(@FIRST_GRAPH_SERIES)
+      categoryField: "year"
+      categoryAxis:
+        gridPosition: "start"
+        axisAlpha: 0
+        fillAlpha: 0.05
+        fillColor: "#000000"
+        gridAlpha: 0
+        title: "Years"
+      export:
+        enabled: true
+        position: "bottom-right"
+        libs:
+          autoLoad: false
+    )
+
+  _setupThirdFusionGraph: ->
     generateCategory = ->
       getDate = (monthsBack) ->
         monthNamesShort = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
@@ -40,13 +100,13 @@
         date = new Date()
         date.setMonth(date.getMonth() - monthsBack);
         monthNamesShort[date.getMonth()] + '<br>' + date.getFullYear()
-      for i in [17..0]
+      for i in [0..19]
         label: getDate(i)
         x: i
 
     generateData = =>
-      for [0..17]
-        x: @_getRandomInt(0, 17)
+      for i in [0..100]
+        x: i % 20 #20 months
         y: @_getRandomInt(1, 8000000)
 
     (new FusionCharts
@@ -55,27 +115,74 @@
       width: 800
       height: 500
       dataSource:
-        chart: {
+        chart:
           caption: "3. Anticipated Term Expiries"
           xAxisName: "Time"
           yAxisName: "Deal value"
           yNumberPrefix: "$"
           theme: "fint"
-        }
         categories:
           category: generateCategory()
-        dataset: @_generateDataset(["7.5.1.2", "7.5.2.2", "7.5.3.2", "7.5.6.2.1"],
-          generateData)
+        dataset: @_generateDataset(@THIRD_GRAPH_SERIES, generateData)
     ).render()
+
+  _setupThirdAmGraph: ->
+    genereateProvider = (series) =>
+      for [0..100]
+        obj = date: new Date(@_getRandomInt(2007, 2015), @_getRandomInt(0, 11), @_getRandomInt(0, 30))
+        for serie in series
+          obj["#{serie}y"] = @_getRandomInt(0, 8000000)
+        obj
+
+    generateGraphs = (series) =>
+      for serie, index in series
+        bullet: "diamond"
+        title: serie
+        xField: "date"
+        yField: "#{serie}y"
+        lineAlpha: 0
+        lineColor: @_getColor(index)
+
+    AmCharts.makeChart("amcharts-scatter",
+      titles: [
+        text: "3. Anticipated Term Expiries"
+        size: 15
+      ]
+      type: "xy"
+      theme: "light"
+      legend:
+        useGraphSettings: true
+      dataProvider: genereateProvider(@THIRD_GRAPH_SERIES)
+      valueAxes: [{
+        title: "Deal value"
+        maximum: 8000000
+        unit: "$"
+        unitPosition: "left"
+      },
+      {
+        "position": "bottom",
+        "type": "date",
+        "minimumDate": new Date(2007, 0, 0),
+        "maximumDate": new Date()
+        "title": "Time"
+      }],
+      graphs: generateGraphs(@THIRD_GRAPH_SERIES)
+      pathToImages: 'amcharts/'
+      chartScrollbar: {}
+      chartCursor: {}
+      export:
+        enabled: true
+        position: "bottom-right"
+        libs:
+          autoLoad: false
+    )
 
   _getColor: (index) ->
     index = Object.keys(jQuery.Color.names)[index]
     jQuery.Color.names[index]
 
-  _generateDataset: (series, dataGenerator) ->
-    data = []
-    for serie, index in series then data.push
+  _generateDataset: (series, dataGenerator) =>
+    for serie, index in series
       seriesname: serie
       data: dataGenerator()
       color: @_getColor(index)
-    data
