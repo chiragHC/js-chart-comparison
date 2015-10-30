@@ -7,7 +7,7 @@
 
   _setupInputs: ->
     $('button').on('click', @_handleDownloadClick)
-    $('.graph').each (index, value) ->
+    $('.js-graph-downloadable').each (index, value) ->
       id = $(value).attr('id')
       $('#download').append $("<option value='#{id}'>#{id}</option>")
 

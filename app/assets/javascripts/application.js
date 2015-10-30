@@ -22,3 +22,4 @@
 //= require ./canvg/canvg.js
 //= require ./FixedDataPointsGraphs.js.coffee
 //= require_tree ./amcharts
+//= require highcharts

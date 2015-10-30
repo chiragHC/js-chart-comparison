@@ -1,21 +1,24 @@
 #= require jquery.color
 
 @FixedDataPointsGraphs = class FixedDataPointsGraphs extends BaseChartsManager
-  FIRST_GRAPH_SERIES: ["7.3.1", "7.3.2", "7.3.3", "7.3.4", "7.3.5", "7.3.6", "7.3.7",
+  FIRST_GRAPH_SERIES: ["7.3.1", "7.3.2", "7.3.3", "7.3.4", "7.3.5", "7.3.6", "7.3.7"
       "7.3.8", "7.3.9", "7.3.10", "7.3.11", "7.3.12", "7.3.13", "7.3.14"]
   THIRD_GRAPH_SERIES: ["7.5.1.2", "7.5.2.2", "7.5.3.2", "7.5.6.2.1"]
   GRAPHS_PERIOD: [2007, 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015]
+  MAX_TRANSACTIONS: 400
+  MAX_DEAL_AMOUNT: 8000000
 
   _setupGraphs: ->
-    FusionCharts.ready @_setupFirstFusionGraph()
-    #second graph have open questions yet
-    FusionCharts.ready @_setupThirdFusionGraph()
-    @_setupFirstAmGraph()
-    @_setupThirdAmGraph()
+    FusionCharts.ready @_setupFirstFusionChart()
+    FusionCharts.ready @_setupThirdFusionChart()
+    @_setupFirstAmChart()
+    @_setupThirdAmChart()
+    @_setupFirstHighChart()
+    @_setupThirdHighChart()
 
-  _setupFirstFusionGraph: ->
+  _setupFirstFusionChart: ->
     generateCategory = => for i in @GRAPHS_PERIOD then label: i
-    generateData = => for i in @GRAPHS_PERIOD then value: @_getRandomInt(0, 399)
+    generateData = => for i in @GRAPHS_PERIOD then value: @_getRandomInt(0, @MAX_TRANSACTIONS)
 
     (new FusionCharts
       type: 'msline'
@@ -28,6 +31,7 @@
           subCaption: "Aggregated amount (7.1) of each 7.3 subfield"
           xAxisName: "Years"
           yAxisName: "Number of transactions"
+          yAxisMaxValue: @MAX_TRANSACTIONS
           theme: "fint"
           showYAxisValues: 1
           showValues: 0
@@ -36,11 +40,11 @@
         dataset: @_generateDataset(@FIRST_GRAPH_SERIES, generateData)
     ).render()
 
-  _setupFirstAmGraph: ->
-    genereateProvider = (series) =>
-      for year in @GRAPHS_PERIOD
+  _setupFirstAmChart: ->
+    genereateProvider = (series, period) =>
+      for year in period
         obj = {year: year}
-        for serie in series then obj[serie] = @_getRandomInt(0, 399)
+        for serie in series then obj[serie] = @_getRandomInt(0, @MAX_TRANSACTIONS)
         obj
 
     generateGraphs = (series) =>
@@ -52,12 +56,12 @@
         fillAlphas: 0
         lineColor: @_getColor(index)
 
-    AmCharts.makeChart("amcharts-line",
+    AmCharts.makeChart("amcharts-line"
       titles: [
         {
           text: "1. Use of Proceeds over Time (2.3)"
           size: 15
-        },
+        }
         {
           text: "Aggregated amount (7.1) of each 7.3 subfield"
           size: 12
@@ -68,9 +72,9 @@
       theme: "light"
       legend:
         useGraphSettings: true
-      dataProvider: genereateProvider(@FIRST_GRAPH_SERIES)
+      dataProvider: genereateProvider(@FIRST_GRAPH_SERIES, @GRAPHS_PERIOD)
       valueAxes: [
-        maximum: 400
+        maximum: @MAX_TRANSACTIONS
         dashLength: 5
         title: "Number of transactions"
       ]
@@ -92,10 +96,43 @@
           autoLoad: false
     )
 
-  _setupThirdFusionGraph: ->
+  _setupFirstHighChart: ->
+    genereateSeries = (series, period) =>
+      for serie, index in series
+        obj = {name: serie}
+        obj.data = for year in period then @_getRandomInt(0, @MAX_TRANSACTIONS)
+        obj.color = @_getColor(index)
+        obj
+
+    $('#highcharts-line').highcharts({
+        title:
+          text: '1. Use of Proceeds over Time (2.3)'
+          x: -20 
+        subtitle:
+          text: 'Aggregated amount (7.1) of each 7.3 subfield'
+          x: -20
+        xAxis:
+          categories: @GRAPHS_PERIOD
+          title:
+            text: 'Years'
+        yAxis:
+          title:
+            text: 'Number of transactions'
+          min: 0
+          max: @MAX_TRANSACTIONS
+        legend: 
+          layout: 'vertical'
+          align: 'right'
+          verticalAlign: 'middle'
+          borderWidth: 0
+        series: genereateSeries(@FIRST_GRAPH_SERIES, @GRAPHS_PERIOD)
+    });
+
+
+  _setupThirdFusionChart: ->
     generateCategory = ->
       getDate = (monthsBack) ->
-        monthNamesShort = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
+        monthNamesShort = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'
           'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
         date = new Date()
         date.setMonth(date.getMonth() - monthsBack);
@@ -107,7 +144,7 @@
     generateData = =>
       for i in [0..100]
         x: i % 20 #20 months
-        y: @_getRandomInt(1, 8000000)
+        y: @_getRandomInt(1, @MAX_DEAL_AMOUNT)
 
     (new FusionCharts
       type: 'scatter'
@@ -126,12 +163,13 @@
         dataset: @_generateDataset(@THIRD_GRAPH_SERIES, generateData)
     ).render()
 
-  _setupThirdAmGraph: ->
+  _setupThirdAmChart: ->
     genereateProvider = (series) =>
       for [0..100]
-        obj = date: new Date(@_getRandomInt(2007, 2015), @_getRandomInt(0, 11), @_getRandomInt(0, 30))
+        obj = date: new Date(@_getRandomInt(2007, 2015),
+          @_getRandomInt(0, 11), @_getRandomInt(0, 30))
         for serie in series
-          obj["#{serie}y"] = @_getRandomInt(0, 8000000)
+          obj["#{serie}y"] = @_getRandomInt(0, @MAX_DEAL_AMOUNT)
         obj
 
     generateGraphs = (series) =>
@@ -143,7 +181,7 @@
         lineAlpha: 0
         lineColor: @_getColor(index)
 
-    AmCharts.makeChart("amcharts-scatter",
+    AmCharts.makeChart("amcharts-scatter"
       titles: [
         text: "3. Anticipated Term Expiries"
         size: 15
@@ -155,17 +193,17 @@
       dataProvider: genereateProvider(@THIRD_GRAPH_SERIES)
       valueAxes: [{
         title: "Deal value"
-        maximum: 8000000
+        maximum: @MAX_DEAL_AMOUNT
         unit: "$"
         unitPosition: "left"
-      },
+      }
       {
-        "position": "bottom",
-        "type": "date",
-        "minimumDate": new Date(2007, 0, 0),
+        "position": "bottom"
+        "type": "date"
+        "minimumDate": new Date(2007, 0, 0)
         "maximumDate": new Date()
         "title": "Time"
-      }],
+      }]
       graphs: generateGraphs(@THIRD_GRAPH_SERIES)
       pathToImages: 'amcharts/'
       chartScrollbar: {}
@@ -175,6 +213,44 @@
         position: "bottom-right"
         libs:
           autoLoad: false
+    )
+
+  _setupThirdHighChart: ->
+    genereateSeries = (series) =>
+      for serie, index in series
+        name: serie
+        color: @_getColor(index)
+        data: for [0..100]
+          [new Date(@_getRandomInt(2007, 2015), @_getRandomInt(0, 11),
+           @_getRandomInt(0, 30)).getTime(), @_getRandomInt(0, @MAX_DEAL_AMOUNT)]
+
+    yAxisFormatter = -> '$ ' + Highcharts.numberFormat(@.value, 0)
+
+    $('#highcharts-scatter').highcharts(
+      chart:
+        type: 'scatter'
+        zoomType: 'xy'
+      title:
+        text: '3. Anticipated Term Expiries'
+      xAxis:
+        title:
+          text: 'Time'
+        type: 'datetime'
+        min: new Date(2007, 0, 0).getTime()
+        max: new Date().getTime()
+      yAxis:
+        title:
+          text: 'Deal value'
+        labels:
+          formatter: yAxisFormatter
+        min: 0
+        max: @MAX_DEAL_AMOUNT
+      plotOptions:
+        scatter:
+          tooltip:
+            headerFormat: '<b>{series.name}</b><br>'
+            pointFormat: '{point.x:%Y/%m/%d} - $ {point.y}'
+      series: genereateSeries(@THIRD_GRAPH_SERIES)
     )
 
   _getColor: (index) ->
