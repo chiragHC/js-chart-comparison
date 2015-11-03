@@ -17,6 +17,8 @@
     @_setupThirdHighChart()
     @_setupFirstDimpleChart()
     @_setupThirdDimpleChart()
+    @_setupFirstC3Chart()
+    @_setupThirdC3Chart()
 
   _setupFirstFusionChart: ->
     generateCategory = => for i in @GRAPHS_PERIOD then label: i
@@ -109,7 +111,7 @@
     $('#highcharts-line').highcharts({
         title:
           text: '1. Use of Proceeds over Time (2.3)'
-          x: -20 
+          x: -20
         subtitle:
           text: 'Aggregated amount (7.1) of each 7.3 subfield'
           x: -20
@@ -122,7 +124,7 @@
             text: 'Number of transactions'
           min: 0
           max: @MAX_TRANSACTIONS
-        legend: 
+        legend:
           layout: 'vertical'
           align: 'right'
           verticalAlign: 'middle'
@@ -153,6 +155,36 @@
 
     myChart.assignColor(serie, @_getColor(index), @_getColor(index), 1) for serie, index in @FIRST_GRAPH_SERIES
     myChart.draw()
+
+  _setupFirstC3Chart: ->
+    generateData = (series, period) =>
+      data =
+        x: 'x'
+        columns: []
+
+      column = ['x']
+      column.push year for year in period
+      data.columns.push column
+
+      for serie in series
+        column = ["#{serie}"]
+        column.push @_getRandomInt(0, @MAX_TRANSACTIONS) for year in period
+        data.columns.push column
+      data
+
+    c3.generate(
+      bindto: '#c3-line'
+      axis:
+        x:
+          label:
+            text: 'Years'
+            position: 'outer-center'
+        y:
+          label:
+            text: 'Number of transactions'
+            position: 'outer-middle'
+      data: generateData(@FIRST_GRAPH_SERIES, @GRAPHS_PERIOD)
+    )
 
   _setupThirdFusionChart: ->
     generateCategory = ->
@@ -191,8 +223,7 @@
   _setupThirdAmChart: ->
     genereateProvider = (series) =>
       for [0..100]
-        obj = date: new Date(@_getRandomInt(2007, 2015),
-          @_getRandomInt(0, 11), @_getRandomInt(0, 30))
+        obj = date: @_randomDate()
         for serie in series
           obj["#{serie}y"] = @_getRandomInt(0, @MAX_DEAL_AMOUNT)
         obj
@@ -246,8 +277,7 @@
         name: serie
         color: @_getColor(index)
         data: for [0..100]
-          [new Date(@_getRandomInt(2007, 2015), @_getRandomInt(0, 11),
-           @_getRandomInt(0, 30)).getTime(), @_getRandomInt(0, @MAX_DEAL_AMOUNT)]
+          [@_randomDate().getTime(), @_getRandomInt(0, @MAX_DEAL_AMOUNT)]
 
     yAxisFormatter = -> '$ ' + Highcharts.numberFormat(@.value, 0)
 
@@ -306,6 +336,50 @@
     myChart.addLegend(280, 10, 360, 20, "left")
     myChart.assignColor(serie, @_getColor(index), @_getColor(index), 1) for serie, index in @THIRD_GRAPH_SERIES
     myChart.draw()
+
+  _setupThirdC3Chart: ->
+    generateData = (series) =>
+      data =
+        x: 'x'
+        columns: []
+        type: 'scatter'
+
+      column = ['x']
+      column.push @_randomDate() for [0..100]
+      data.columns.push column
+
+      for serie in series
+        column = ["#{serie}"]
+        column.push @_getRandomInt(0, @MAX_DEAL_AMOUNT) for [0..100]
+        data.columns.push column
+      data
+
+    c3.generate(
+      bindto: '#c3-scatter'
+      data: generateData(@THIRD_GRAPH_SERIES)
+      axis:
+        x:
+          type: 'timeseries',
+          tick:
+            format: '%Y'
+            fit: false
+          label:
+            text: 'Time'
+            position: 'outer-center'
+        y:
+          tick:
+            format: d3.format("s")
+          label:
+            text: 'Deal Value'
+            position: 'outer-middle'
+      tooltip:
+        format:
+          title: d3.time.format('%Y/%m/%d')
+          value: d3.format('$,')
+    )
+
+  _randomDate: ->
+    new Date(@_getRandomInt(2007, 2015), @_getRandomInt(0, 11), @_getRandomInt(0, 30))
 
   _getColor: (index) ->
     index = Object.keys(jQuery.Color.names)[index]

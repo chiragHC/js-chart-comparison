@@ -25,3 +25,4 @@
 //= require highcharts
 //= require d3
 //= require ./dimple
+//= require c3
