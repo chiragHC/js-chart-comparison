@@ -15,6 +15,8 @@
     @_setupThirdAmChart()
     @_setupFirstHighChart()
     @_setupThirdHighChart()
+    @_setupFirstDimpleChart()
+    @_setupThirdDimpleChart()
 
   _setupFirstFusionChart: ->
     generateCategory = => for i in @GRAPHS_PERIOD then label: i
@@ -128,6 +130,29 @@
         series: genereateSeries(@FIRST_GRAPH_SERIES, @GRAPHS_PERIOD)
     });
 
+  _setupFirstDimpleChart: ->
+    genereateProvider = (series, period) =>
+      data = []
+      for serie in series
+        for year in period then data.push
+          'Years': "#{year}"
+          'Number of transactions': @_getRandomInt(0, @MAX_TRANSACTIONS)
+          'Serie': serie
+      data
+
+    svg = dimple.newSvg("#dimple-line", 800, 500)
+
+    myChart = new dimple.chart(svg, genereateProvider(@FIRST_GRAPH_SERIES, @GRAPHS_PERIOD))
+    myChart.setBounds(60, 30, 700, 400)
+    myChart.addTimeAxis("x", "Years", "%Y","%Y");
+    myChart.addMeasureAxis("y", "Number of transactions")
+    myChart.addLegend(180, 5, 460, 30, "left")
+
+    serie = myChart.addSeries('Serie', dimple.plot.line)
+    serie.addOrderRule(@FIRST_GRAPH_SERIES)
+
+    myChart.assignColor(serie, @_getColor(index), @_getColor(index), 1) for serie, index in @FIRST_GRAPH_SERIES
+    myChart.draw()
 
   _setupThirdFusionChart: ->
     generateCategory = ->
@@ -252,6 +277,35 @@
             pointFormat: '{point.x:%Y/%m/%d} - $ {point.y}'
       series: genereateSeries(@THIRD_GRAPH_SERIES)
     )
+
+  _setupThirdDimpleChart: ->
+    genereateProvider = (series) =>
+      data = []
+      for serie in series
+        for [0..100] then data.push
+          'Time': @_getRandomInt(2007, 2015) + '/' + @_getRandomInt(0, 11) + '/' + @_getRandomInt(0, 30)
+          'Deal Value': @_getRandomInt(0, @MAX_DEAL_AMOUNT)
+          'Serie': serie
+      data
+    svg = dimple.newSvg("#dimple-scatter", 800, 500)
+
+    myChart = new dimple.chart(svg, genereateProvider(@THIRD_GRAPH_SERIES))
+    myChart.setBounds(60, 30, 700, 400)
+
+    x = myChart.addTimeAxis("x", "Time", "%Y/%m/%d","%Y/%m");
+    y = myChart.addMeasureAxis("y", "Deal Value")
+
+    x.overrideMin = new Date("2006-10-01") #add a little space to the left
+    x.overrideMax = new Date()
+    #for some reason dimple is replacing some Y values with some high values
+    y.overrideMax = @MAX_DEAL_AMOUNT
+
+    serie = myChart.addSeries('Serie', dimple.plot.bubble)
+    serie.addOrderRule(@THIRD_GRAPH_SERIES)
+
+    myChart.addLegend(280, 10, 360, 20, "left")
+    myChart.assignColor(serie, @_getColor(index), @_getColor(index), 1) for serie, index in @THIRD_GRAPH_SERIES
+    myChart.draw()
 
   _getColor: (index) ->
     index = Object.keys(jQuery.Color.names)[index]

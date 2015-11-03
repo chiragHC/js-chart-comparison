@@ -29,6 +29,8 @@ GEM
       coffee-script-source
       execjs
     coffee-script-source (1.9.1.1)
+    d3-rails (3.5.6)
+      railties (>= 3.1)
     erubis (2.7.0)
     execjs (2.6.0)
     highcharts-rails (3.0.10)
@@ -103,6 +105,7 @@ PLATFORMS
 DEPENDENCIES
   byebug
   coffee-rails (~> 4.1.0)
+  d3-rails (~> 3.5, >= 3.5.6)
   highcharts-rails (~> 3.0.0)
   jquery-color
   jquery-rails

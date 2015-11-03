@@ -15,7 +15,8 @@ gem 'jquery-rails'
 gem 'js-routes'
 gem 'jquery-color'
 
-gem "highcharts-rails", "~> 3.0.0"
+gem 'highcharts-rails', '~> 3.0.0'
+gem 'd3-rails', '~> 3.5', '>= 3.5.6'
 
 gem 'puma'
 
