@@ -23,3 +23,5 @@
 //= require ./FixedDataPointsGraphs.js.coffee
 //= require_tree ./amcharts
 //= require highcharts
+//= require d3
+//= require ./dimple

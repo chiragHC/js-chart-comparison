@@ -15,6 +15,7 @@
     @_setupThirdAmChart()
     @_setupFirstHighChart()
     @_setupThirdHighChart()
+    @_setupThirdDimpleChart()
 
   _setupFirstFusionChart: ->
     generateCategory = => for i in @GRAPHS_PERIOD then label: i
@@ -252,6 +253,37 @@
             pointFormat: '{point.x:%Y/%m/%d} - $ {point.y}'
       series: genereateSeries(@THIRD_GRAPH_SERIES)
     )
+
+  _setupThirdDimpleChart: ->
+    genereateProvider = (series) =>
+      data = []
+      for serie in series
+        for [0..100] then data.push
+          date: new Date(@_getRandomInt(2007, 2015),
+            @_getRandomInt(0, 11), @_getRandomInt(0, 30))
+          amount: @_getRandomInt(0, @MAX_DEAL_AMOUNT)
+          serie: serie
+      data
+
+    console.log genereateProvider(@THIRD_GRAPH_SERIES)
+
+    data = [
+      {date:"1-May-12",close:"58.13",channel:"a"}
+      {date:"30-Apr-12",close:"53.98",channel:"a"}
+      {date:"27-Apr-12",close:"67.00",channel:"a"}
+      {date:"26-Apr-12",close:"89.70",channel:"b"}
+      {date:"25-Apr-12",close:"99.00",channel:"b"}
+    ]
+
+    svg = dimple.newSvg("#dimple-scatter", 800, 500)
+    myChart = new dimple.chart(svg, genereateProvider(@THIRD_GRAPH_SERIES))
+    myChart.setBounds(60, 30, 700, 400)
+    x = myChart.addCategoryAxis("x", "date")
+    x.addOrderRule("date")
+    myChart.addMeasureAxis("y", "amount")
+    myChart.addSeries("serie", dimple.plot.bubble)
+    myChart.addLegend(180, 10, 360, 20, "right")
+    myChart.draw()
 
   _getColor: (index) ->
     index = Object.keys(jQuery.Color.names)[index]
