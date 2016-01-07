@@ -10,7 +10,3 @@ Javascript graph libraries used:
 * Highcharts[http://www.highcharts.com/]
 * Dimple[https://github.com/PMSI-AlignAlytics/dimple]
 * C3[https://github.com/masayuki0812/c3]
-
-== Instalation
-
-% bundle
