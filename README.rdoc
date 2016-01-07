@@ -1,28 +1,16 @@
-== README
+== About
 
-This README would normally document whatever steps are necessary to get the
-application up and running.
+This is a simple rails application created to compare multiple javascript chart libraries (both free and paid).
 
-Things you may want to cover:
+Javascript graph libraries used:
 
-* Ruby version
+* RGraph[http://www.rgraph.net/]
+* FusionCharts[http://www.fusioncharts.com/]
+* AMCHARTS[https://www.amcharts.com/]
+* Highcharts[http://www.highcharts.com/]
+* Dimple[https://github.com/PMSI-AlignAlytics/dimple]
+* C3[https://github.com/masayuki0812/c3]
 
-* System dependencies
+== Instalation
 
-* Configuration
-
-* Database creation
-
-* Database initialization
-
-* How to run the test suite
-
-* Services (job queues, cache servers, search engines, etc.)
-
-* Deployment instructions
-
-* ...
-
-
-Please feel free to use a different markup language if you do not plan to run
-<tt>rake doc:app</tt>.
+% bundle
